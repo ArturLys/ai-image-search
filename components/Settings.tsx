@@ -24,7 +24,7 @@ export default function Settings() {
         <DrawerHeader>
           <DrawerTitle>Settings</DrawerTitle>
         </DrawerHeader>
-        <div className='flex flex-col px-4 gap-3'>
+        <div className='flex flex-col px-4 gap-5'>
           <div className='flex items-center gap-2'>
             <ThemeDropdown />
             <label htmlFor='theme'>Theme</label>
@@ -33,14 +33,11 @@ export default function Settings() {
             <Checkbox id='sfw' />
             <label htmlFor='sfw'>Only SFW</label>
           </div>
-          <div className='flex items-center gap-2'>
-            <Input id='blacklist' placeholder='tags' />
+          <div className='flex flex-col  gap-2'>
             <label htmlFor='blacklist'>Blacklisted tags</label>
+            <Input id='blacklist' placeholder='tags' />
           </div>
         </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )
