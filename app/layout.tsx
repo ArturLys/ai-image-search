@@ -1,8 +1,8 @@
+import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ThemeDropdown } from '@/components/ThemeDropdown'
-import './globals.css'
+import Header from '@/components/Header'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,11 +24,10 @@ export default function RootLayout({
       <head />
       <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          <main className='flex-1'>{children}</main>
-          <footer className='py-4 px-4 border-t flex items-center justify-between'>
-            <p className='text-sm text-muted-foreground'>AI Image Search</p>
-            <ThemeDropdown />
-          </footer>
+          <div className='min-h-screen flex flex-col'>
+            <Header />
+            <main className='flex-1'>{children}</main>
+          </div>
         </ThemeProvider>
       </body>
     </html>
