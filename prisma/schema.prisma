@@ -11,3 +11,16 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Settings {
+  id        Int     @id @default(1)
+  sfw       Boolean @default(true)
+  blacklist String  @default("")
+}
+
+model SearchHistory {
+  id        Int      @id @default(autoincrement())
+  query     String
+  results   Int
+  createdAt DateTime @default(now())
+}

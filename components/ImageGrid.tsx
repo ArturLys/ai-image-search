@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState, useMemo } from 'react'
-import { getPostsByTags } from '@/actions/gelbooru'
+import { GelbooruPost, getPostsByTags } from '@/actions/gelbooru'
 import Image from 'next/image'
+import { Play } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { useActions } from '@/hooks/useAppStore'
 
 function useColumnCount() {
   const [cols, setCols] = useState(5)
@@ -22,12 +25,22 @@ function useColumnCount() {
   return cols
 }
 
-export default function ImageGrid({ initialPosts, tags }: { initialPosts: any[]; tags: string }) {
+export default function ImageGrid({ initialPosts, tags, totalPosts }: { initialPosts: GelbooruPost[]; tags: string; totalPosts: number }) {
   const [posts, setPosts] = useState(initialPosts)
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const searchParams = useSearchParams()
+  const { addHistory } = useActions()
+
+  useEffect(() => {
+    const query = searchParams.get('tags')
+    if (query) {
+      addHistory(query, totalPosts)
+    }
+  }, [totalPosts])
 
   const cols = useColumnCount()
 
@@ -70,8 +83,8 @@ export default function ImageGrid({ initialPosts, tags }: { initialPosts: any[];
     if (page === 0) return
     setLoading(true)
     getPostsByTags(tags, page).then((newPosts) => {
-      if (newPosts && newPosts.length > 0) {
-        setPosts((prev) => [...prev, ...newPosts])
+      if (newPosts && newPosts.post?.length > 0) {
+        setPosts((prev) => [...prev, ...newPosts.post])
       } else {
         setHasMore(false)
       }
@@ -84,8 +97,29 @@ export default function ImageGrid({ initialPosts, tags }: { initialPosts: any[];
       <div className={`grid gap-1 p-1`} style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
         {columns.map((col, i) => (
           <div key={i} className='flex flex-col gap-1'>
-            {col.map((post: any) => (
-              <Image key={post.id} src={post.preview_url} alt={post.tags} width={post.width} height={post.height} className='w-full select-none' />
+            {col.map((post: GelbooruPost) => (
+              <div className='relative group'>
+                <Image
+                  key={post.id}
+                  src={post.preview_url}
+                  alt={post.tags}
+                  width={post.preview_width}
+                  height={post.preview_height}
+                  className='w-full select-none'
+                  onClick={() => {}}
+                  onDoubleClick={() => {
+                    window.open(post.file_url, '_blank')
+                  }}
+                />
+                <div className='select-none hidden group-hover:block absolute top-2 right-2 text-center rounded-full px-2 py-1 bg-background opacity-50 min-w-8'>
+                  {post.score}
+                </div>
+                {post.tags.includes('animated') && (
+                  <div className='hidden group-hover:block absolute bottom-2 left-2 text-center rounded-full px-1 py-1 bg-background opacity-50'>
+                    <Play size={16} />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         ))}

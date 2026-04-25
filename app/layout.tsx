@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: 'Search for gelbooru images with AI',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
