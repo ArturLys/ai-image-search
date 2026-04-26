@@ -5,7 +5,7 @@ import { GelbooruPost, getPostsByTags } from '@/actions/gelbooru'
 import Image from 'next/image'
 import { Play } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { useActions } from '@/hooks/useAppStore'
+import { useActions, usePage, usePosts, useSelectedImages } from '@/hooks/useAppStore'
 
 function useColumnCount() {
   const [cols, setCols] = useState(5)
@@ -26,14 +26,20 @@ function useColumnCount() {
 }
 
 export default function ImageGrid({ initialPosts, tags, totalPosts }: { initialPosts: GelbooruPost[]; tags: string; totalPosts: number }) {
-  const [posts, setPosts] = useState(initialPosts)
-  const [page, setPage] = useState(0)
+  const posts = usePosts()
+  const page = usePage()
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   const searchParams = useSearchParams()
-  const { addHistory } = useActions()
+  const { addHistory, toggleSelectedImage, setPosts, addPosts, setPage } = useActions()
+  const selectedImages = useSelectedImages()
+
+  useEffect(() => {
+    setPosts(initialPosts, totalPosts)
+    setHasMore(true)
+  }, [initialPosts, totalPosts])
 
   useEffect(() => {
     const query = searchParams.get('tags')
@@ -68,7 +74,7 @@ export default function ImageGrid({ initialPosts, tags, totalPosts }: { initialP
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading && hasMore) {
-          setPage((prev) => prev + 1)
+          setPage(page + 1)
         }
       },
       {
@@ -77,14 +83,14 @@ export default function ImageGrid({ initialPosts, tags, totalPosts }: { initialP
     )
     if (sentinelRef.current) observer.observe(sentinelRef.current)
     return () => observer.disconnect()
-  }, [loading, hasMore])
+}, [loading, hasMore, page])
 
   useEffect(() => {
     if (page === 0) return
     setLoading(true)
     getPostsByTags(tags, page).then((newPosts) => {
       if (newPosts && newPosts.post?.length > 0) {
-        setPosts((prev) => [...prev, ...newPosts.post])
+        addPosts(newPosts.post)
       } else {
         setHasMore(false)
       }
@@ -98,15 +104,16 @@ export default function ImageGrid({ initialPosts, tags, totalPosts }: { initialP
         {columns.map((col, i) => (
           <div key={i} className='flex flex-col gap-1'>
             {col.map((post: GelbooruPost) => (
-              <div className='relative group'>
+              <div className='relative group' key={post.id}>
                 <Image
-                  key={post.id}
                   src={post.preview_url}
-                  alt={post.tags}
+                  alt={post.tags.replace(/loli/gi, 'cute')}
                   width={post.preview_width}
                   height={post.preview_height}
-                  className='w-full select-none'
-                  onClick={() => {}}
+                  className={`w-full select-none cursor-pointer transition-all duration-100 ${selectedImages.some((img) => img.id === post.id) ? 'outline-2 outline-offset-0 outline-blue-500' : ''}`}
+                  onClick={() => {
+                    toggleSelectedImage(post)
+                  }}
                   onDoubleClick={() => {
                     window.open(post.file_url, '_blank')
                   }}

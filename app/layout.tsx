@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/Header'
+import AIChat from '@/components/AIChat'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,6 +29,7 @@ export default async function RootLayout({
             <Header />
             <main className='flex-1'>{children}</main>
           </div>
+          <AIChat />
         </ThemeProvider>
       </body>
     </html>

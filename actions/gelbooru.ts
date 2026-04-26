@@ -1,5 +1,7 @@
 'use server'
 
+import { prisma } from '@/prisma/prisma'
+
 const url = `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1${process.env.GELBOORU_CREDENTIALS}`
 export interface GelbooruPost {
   id: number
@@ -48,13 +50,38 @@ interface RawGelbooruResponse {
 }
 
 export const getPostsByTags = async (tags: string, page: number = 0): Promise<GelbooruResponse> => {
-  const res = await fetch(`${url}&tags=${tags}&limit=100&pid=${page}`)
+  const params = new URLSearchParams({
+    tags,
+    limit: '100',
+    pid: String(page),
+  })
+
+  const res = await fetch(`${url}&${params.toString()}`)
   const json = (await res.json()) as RawGelbooruResponse
-  
+
   return {
     post: json.post ?? [],
-    total_posts: json['@attributes']?.count ?? 0
+    total_posts: json['@attributes']?.count ?? 0,
   }
+}
+
+export const get10xPostsByTags = async (tags: string, page: number = 0): Promise<GelbooruResponse> => {
+  const finalTags = await getFilteredTags(tags)
+  const results = await Promise.all(Array.from({ length: 10 }).map((_, i) => getPostsByTags(finalTags, page + i)))
+  const allPosts = results.flatMap((r) => r.post)
+  return { post: allPosts, total_posts: (await getPostsByTags(finalTags)).total_posts }
+}
+
+export async function getFilteredTags(tags: string) {
+  const dbSettings = await prisma.settings.findUnique({ where: { id: 1 } })
+  const isSfw = dbSettings?.sfw ?? true
+  const blacklist = dbSettings?.blacklist ?? ''
+
+  const invertedBlacklist = blacklist
+    .split(' ')
+    .filter(Boolean)
+    .map((tag) => `-${tag}`)
+  return [tags, isSfw ? 'rating:g' : null, ...invertedBlacklist].filter(Boolean).join(' ')
 }
 
 /*'@attributes': { limit: 100, offset: 0, count: 144310 },
