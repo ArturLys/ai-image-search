@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/Header'
 import AIChat from '@/components/AIChat'
+import { Suspense } from 'react'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +30,9 @@ export default async function RootLayout({
             <Header />
             <main className='flex-1'>{children}</main>
           </div>
-          <AIChat />
+          <Suspense fallback={null}>
+            <AIChat />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
