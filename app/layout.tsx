@@ -27,7 +27,9 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
           <div className='min-h-screen flex flex-col'>
-            <Header />
+            <Suspense fallback={null}>
+              <Header />
+            </Suspense>
             <main className='flex-1'>{children}</main>
           </div>
           <Suspense fallback={null}>
