@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Image Search
+
+AI powered image browser for Gelbooru with integrated Google Gemini AI.
+
+![AI Chat](screenshots/ai-chat.png)
+
+## Highlights
+* **Smart Grid:** Masonry layout that balances images by aspect ratio with infinite scroll.
+* **AI Assistant:** Powered by the **Gemini API**, the chatbot sees the entire context of the page and knows which images you have selected.
+* **Architecture:** Built with Next.js, using **Zustand** for state management and **Prisma** to store the filters, blacklist, and search history.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+* Node.js 18+
+* PostgreSQL database
+* [Gelbooru API Account](https://gelbooru.com/) (`api_key` & `user_id`)
+* [Google Gemini API Key](https://aistudio.google.com/apikey)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Installation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Clone & Install**
+   ```bash
+   git clone https://github.com/ItzKoTiK/ai-image-search.git
+   cd ai-image-search
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **Environment Variables**
+   ```bash
+   cp .env.example .env
+   # Add your database URL and API keys to .env
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Database Setup**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-## Learn More
+4. **Run the App**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
+* **Search:** Type tags in the top search bar. The URL updates automatically (`/?tags=...`).
+* **Bulk Fetch:** Click the lightning bolt icon to load 1000 images at once.
+* **Chat:** Click the sparkles icon to open the AI assistant. Select images in the grid to provide context to the AI.
+* **Settings:** Open the right drawer to toggle themes, change AI models, or edit your SFW/blacklist preferences.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT

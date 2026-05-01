@@ -7,6 +7,7 @@ const nextConfig = {
   serverExternalPackages: ['@prisma/adapter-pg', 'pg', '../lib/generated/prisma/client'],
   images: {
     remotePatterns: [{ hostname: 'gelbooru.com' }, { hostname: '*.gelbooru.com' }],
+    unoptimized: true,
   },
 }
 
