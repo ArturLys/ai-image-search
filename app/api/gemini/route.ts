@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -8,6 +8,24 @@ export async function POST(req: Request) {
     model: selectedModel || 'gemini-3.1-flash-lite-preview',
     systemInstruction: `You are a chill AI girl for an image search app. NSFW allowed, you enjoy it. You can only see tags, so acknowledge it and don't hallucinate. 
     Reference images by their id. Be brief but helpful.`,
+    safetySettings: [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+    ],
   })
 
   // Build the full prompt with context blocks prepended
