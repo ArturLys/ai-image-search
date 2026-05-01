@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Menu, X } from 'lucide-react'
 import { Button } from './ui/button'
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/drawer'
@@ -18,6 +20,9 @@ export default function Settings() {
   const history = useHistory()
   const model = useModel()
   const { setSfw, setBlacklist, clearHistory, setModel } = useActions()
+  
+  const [showEmoji, setShowEmoji] = useState(false)
+  const forceSfw = process.env.NEXT_PUBLIC_FORCE_SFW === 'true'
 
   return (
     <Drawer direction='right'>
@@ -47,8 +52,19 @@ export default function Settings() {
             <ModelDropdown containerId='settings-drawer' />
           </div>
           <div className='flex items-center gap-2'>
-            <Checkbox id='sfw' onCheckedChange={(checked) => setSfw(checked)} checked={sfw} />
-            <label htmlFor='sfw'>Only SFW</label>
+            <Checkbox 
+              id='sfw' 
+              onCheckedChange={(checked) => {
+                if (forceSfw && !checked) {
+                  setShowEmoji(true)
+                  setTimeout(() => setShowEmoji(false), 2000)
+                  return
+                }
+                setSfw(checked)
+              }} 
+              checked={forceSfw ? true : sfw} 
+            />
+            <label htmlFor='sfw'>Only SFW {showEmoji && '🤨'}</label>
           </div>
           <div className='flex flex-col gap-2'>
             <label htmlFor='blacklist'>Blacklisted tags</label>

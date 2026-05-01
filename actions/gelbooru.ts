@@ -74,7 +74,8 @@ export const get10xPostsByTags = async (tags: string, page: number = 0): Promise
 
 export async function getFilteredTags(tags: string) {
   const dbSettings = await prisma.settings.findUnique({ where: { id: 1 } })
-  const isSfw = dbSettings?.sfw ?? true
+  const forceSfw = process.env.NEXT_PUBLIC_FORCE_SFW === 'true'
+  const isSfw = forceSfw ? true : (dbSettings?.sfw ?? true)
   const blacklist = dbSettings?.blacklist ?? ''
 
   const invertedBlacklist = blacklist
