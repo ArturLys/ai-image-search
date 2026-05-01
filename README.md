@@ -13,8 +13,7 @@ AI powered image browser for Gelbooru with integrated Google Gemini AI.
 
 ### Prerequisites
 * Node.js 18+
-* PostgreSQL database
-* [Gelbooru API Account](https://gelbooru.com/) (`api_key` & `user_id`)
+* Gelbooru API Account
 * [Google Gemini API Key](https://aistudio.google.com/apikey)
 
 ### Installation
